@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+service FileSearchService {
+    rpc SearchFiles (FileSearchRequest) returns (stream FileSearchResponse) {}
+}
+
+message FileSearchRequest {
+    string filename_pattern = 1;
+}
+
+message FileSearchResponse {
+    File files = 1;
+}
+
+message File {
+    string filename = 1;
+    bytes file = 2;
+}

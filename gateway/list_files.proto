@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+service ListFiles {
+  rpc GetFilesList (ListFilesRequest) returns (ListFilesResponse) {}
+}
+
+message ListFilesRequest {
+}
+
+message ListFilesResponse {
+  repeated File files = 1;
+}
+
+message File {
+    string filename = 1;
+    bytes file = 2;
+}
+
