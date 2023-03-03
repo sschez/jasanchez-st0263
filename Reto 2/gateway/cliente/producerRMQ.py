@@ -1,5 +1,8 @@
 import pika
 import uuid
+from dotenv import load_dotenv
+
+
 
 #Clase que contiene todo el codgio necesario para establecer conexion con RabbitMQ y enviar solicitudes al consumidor
 class ArchivoRPC:
@@ -40,8 +43,8 @@ class ArchivoRPC:
             self.connection.process_data_events()
         return self.response.decode()
 
-archivo_rpc = ArchivoRPC()
+file_rpc = ArchivoRPC()
 
 filename = input("Ingrese el nombre del archivo que desea buscar: ")
-response = archivo_rpc.call(filename)
+response = file_rpc.call(filename)
 print(response)

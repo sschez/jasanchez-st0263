@@ -1,10 +1,21 @@
 import pika
 import os
+from dotenv import load_dotenv
 
-connection = pika.BlockingConnection(pika.ConnectionParameters('localhost', 5672, '/', pika.PlainCredentials("guest", "guest")))
+load_dotenv()
+
+rmq_host = os.getenv('HOST')
+rmq_port = os.getenv('PORT')
+rmq_user = os.getenv('USER')
+rmq_password = os.getenv('PASSWORD')
+rmq_queue = os.getenv('QUEUE')
+
+connection = pika.BlockingConnection(pika.ConnectionParameters(host=rmq_host, 
+                                                                port=int(rmq_port),
+                                                                credentials= pika.PlainCredentials(username=rmq_user,password=rmq_password)))
 channel = connection.channel()
 
-channel.queue_declare(queue='archivo_rpc')
+channel.queue_declare(queue=rmq_queue)
 
 def on_request(ch, method, props, body):
     filename = body.decode()
@@ -30,7 +41,7 @@ def buscar_archivo(filename):
     
 
 channel.basic_qos(prefetch_count=1)
-channel.basic_consume(queue='archivo_rpc', on_message_callback=on_request)
+channel.basic_consume(queue=rmq_queue, on_message_callback=on_request)
 
 print("Esperando por solicitudes...")
 channel.start_consuming()
