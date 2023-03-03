@@ -1,12 +1,14 @@
 from flask import Flask, jsonify, request
 import pika
+import uuid
+import json
 
 app = Flask(__name__)
 
 @app.route('/search_file', methods=['POST'])
 def search_file():
     # Se establece una conexión con RabbitMQ
-    connection = pika.BlockingConnection(pika.ConnectionParameters(('localhost', 5672, '/', pika.PlainCredentials('guest', 'guest'))))
+    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost', 5672, '/', pika.PlainCredentials('guest', 'guest')))
     channel = connection.channel()
 
     # Se declara la cola en la que se enviará el mensaje de búsqueda
@@ -16,7 +18,7 @@ def search_file():
     search_param = request.get_json()['search_param']
     correlation_id = str(uuid.uuid4())
     channel.basic_publish(
-        exchange='',
+        exchange='search_files',
         routing_key='file_search',
         body=search_param,
         properties=pika.BasicProperties(
@@ -44,3 +46,4 @@ def search_file():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
