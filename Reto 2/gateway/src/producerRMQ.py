@@ -3,8 +3,8 @@ import uuid
 from dotenv import load_dotenv
 import os
 
-rmq_host = os.getenv('HOST_GRPC')
-rmq_port = os.getenv('PORT')
+rmq_host = os.getenv('HOST_RMQ')
+rmq_port = os.getenv('PORT_RMQ')
 rmq_user = os.getenv('USER')
 rmq_password = os.getenv('PASSWORD')
 rmq_queue = os.getenv('QUEUE')

@@ -7,13 +7,14 @@ import uuid
 import json
 
 import files_pb2, files_pb2_grpc
-#from dotenv import load_dotenv
+from dotenv import load_dotenv
 
-#load_dotenv()
+load_dotenv()
 
 app = Flask(__name__)
 
-host = os.getenv("HOST")
+host_rmq = os.getenv("HOST_RMQ")
+host_grpc = os.getenv("HOST_GRPC")
 #Se configura las credenciales y el puerto de RabbitMQ
 rmq_port = os.getenv('PORT_RMQ')
 rmq_user = os.getenv('USER')
@@ -36,7 +37,7 @@ def search_files():
 
 @app.route("/files")
 def list_files():
-    with grpc.insecure_channel(f'{host}:{grpc_port}') as channel:
+    with grpc.insecure_channel(f'{host_grpc}:{grpc_port}') as channel:
         # Cliente para el servicio de ListFiles
         list_files_client = files_pb2_grpc.FilesStub(channel)
 

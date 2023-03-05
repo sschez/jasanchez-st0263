@@ -2,7 +2,7 @@ import pika
 import os
 from dotenv import load_dotenv
 
-#load_dotenv()
+load_dotenv()
 
 rmq_host = os.getenv('HOST')
 rmq_port = os.getenv('PORT')
