@@ -1,21 +1,42 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import grpc
 import os 
+import pika
+import producerRMQ
+import uuid
+import json
 
 import files_pb2, files_pb2_grpc
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 
-load_dotenv()
+#load_dotenv()
 
 app = Flask(__name__)
 
-# Se configura la dirección y puerto del servidor gRPC
-SERVER_ADDRESS = os.getenv("SERVER_ADDRESS")
-SERVER_PORT = os.getenv("PORT")
+host = os.getenv("HOST")
+#Se configura las credenciales y el puerto de RabbitMQ
+rmq_port = os.getenv('PORT_RMQ')
+rmq_user = os.getenv('USER')
+rmq_password = os.getenv('PASSWORD')
+# Se configura el puerto del servidor gRPC
+grpc_port = os.getenv("PORT_GRPC")
+
+
+@app.route('/search-files')
+def search_files():
+    query = request.args.get('query')
+    producer = producerRMQ.ArchivoMOM()
+    data = producer.call(query)
+    response = app.response_class(
+        response=json.dumps(data),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
 
 @app.route("/files")
 def list_files():
-    with grpc.insecure_channel(f'{SERVER_ADDRESS}:{SERVER_PORT}') as channel:
+    with grpc.insecure_channel(f'{host}:{grpc_port}') as channel:
         # Cliente para el servicio de ListFiles
         list_files_client = files_pb2_grpc.FilesStub(channel)
 

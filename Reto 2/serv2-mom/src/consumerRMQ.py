@@ -2,7 +2,7 @@ import pika
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+#load_dotenv()
 
 rmq_host = os.getenv('HOST')
 rmq_port = os.getenv('PORT')
@@ -32,12 +32,8 @@ def on_request(ch, method, props, body):
 def buscar_archivo(filename):
     for root, dirs, files in os.walk(os.getcwd()):
         if filename in files:
-            return f"El archivo {filename} se encuentra en el microservicio." #os.path.join(root, filename)
+            return f"El archivo {filename} se encuentra en el microservicio."
     return f"No se ha encontrado el archivo {filename} en el microservicio."
-    #if os.path.isfile(filename):
-     #   return f"El archivo {filename} se encuentra en el microservicio."
-    #else:
-     #   return f"No se ha encontrado el archivo {filename} en el microservicio."
     
 
 channel.basic_qos(prefetch_count=1)

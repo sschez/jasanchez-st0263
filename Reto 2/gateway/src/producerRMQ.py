@@ -1,14 +1,20 @@
 import pika
 import uuid
 from dotenv import load_dotenv
+import os
 
-
-
+rmq_host = os.getenv('HOST_GRPC')
+rmq_port = os.getenv('PORT')
+rmq_user = os.getenv('USER')
+rmq_password = os.getenv('PASSWORD')
+rmq_queue = os.getenv('QUEUE')
 #Clase que contiene todo el codgio necesario para establecer conexion con RabbitMQ y enviar solicitudes al consumidor
-class ArchivoRPC:
+class ArchivoMOM:
     #Conexion a RMQ y creacion de canal exclusiva que se utilizara por el productor para recibir respuestas del consumidor
     def __init__(self):
-        self.connection =  pika.BlockingConnection(pika.ConnectionParameters('localhost', 5672, '/', pika.PlainCredentials('guest', 'guest')))
+        self.connection =  pika.BlockingConnection(pika.ConnectionParameters(host=rmq_host, 
+                                                                port=int(rmq_port),
+                                                                credentials= pika.PlainCredentials(username=rmq_user,password=rmq_password)))
         self.channel = self.connection.channel()
         result = self.channel.queue_declare(queue='', exclusive=True)
         self.callback_queue = result.method.queue
@@ -18,7 +24,7 @@ class ArchivoRPC:
             queue=self.callback_queue,
             on_message_callback=self.on_response,
             auto_ack=True)
-
+#
     #Sera llamada cuando reciba la respuesta del consumidor. 
     # Esta función compara el identificador de correlacion de la respuesta con el identificador de correlacion de la solicitud original.
     #Si coinnciden, la respuesta se almacena en self.response
@@ -43,8 +49,8 @@ class ArchivoRPC:
             self.connection.process_data_events()
         return self.response.decode()
 
-file_rpc = ArchivoRPC()
+#file_mom = ArchivoMOM()
 
-filename = input("Ingrese el nombre del archivo que desea buscar: ")
-response = file_rpc.call(filename)
-print(response)
+#filename = input("Ingrese el nombre del archivo que desea buscar: ")
+#response = file_mom.call(filename)
+#print(response)

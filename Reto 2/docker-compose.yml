@@ -1,0 +1,62 @@
+version: "3.8"
+
+services:
+  gateway:
+    build:
+      context: ./gateway
+    command: flask run
+    environment:
+      - FLASK_APP=/app/src
+    expose:
+      - 80
+    ports:
+      - 80:80
+    env_file:
+      - ./gateway/.env
+    volumes:
+      - ./gateway:/app
+    networks:
+      - reto-2
+    depends_on:
+      - rabbitmq
+
+  serv1-grpc:
+    build:
+      context: ./serv1-grpc
+    command: air
+    env_file:
+      - ./serv1-grpc/.env
+    volumes:
+      - ./serv1-grpc:/app
+    networks:
+      - reto-2
+    depends_on:
+      - gateway
+
+  serv2-mom:
+    build:
+      context: ./serv2-mom
+    command: python ./src/consumerRMQ.py
+    env_file:
+      - ./serv2-mom/.env
+    volumes:
+      - ./serv2-mom:/app
+    networks:
+      - reto-2
+    depends_on:
+      - gateway
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:3.8-management-alpine
+    expose:
+      - 5672
+    ports:
+      - 15672:15672
+    volumes:
+      - ./config-RMQ/config.json:/etc/rabbitmq/definitions.json
+    networks:
+      - reto-2
+
+networks:
+  reto-2:
