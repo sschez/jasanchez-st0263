@@ -6,6 +6,7 @@ import producerRMQ
 import uuid
 import json
 
+
 import files_pb2, files_pb2_grpc
 from dotenv import load_dotenv
 
@@ -46,3 +47,7 @@ def list_files():
 
         # Se retorna la lista de archivos en formato JSON
         return jsonify({"files": [file.filename for file in response.files]})
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0')

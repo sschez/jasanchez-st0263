@@ -8,3 +8,5 @@ RUN pip install -r requirements.txt
 ENV APP_DIR=/app
 RUN mkdir -p ${APP_DIR}
 WORKDIR ${APP_DIR}
+# Exponer el puerto 5000 para que la aplicación sea accesible desde el host
+EXPOSE 5000

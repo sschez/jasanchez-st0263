@@ -8,3 +8,5 @@ RUN pip install -r requirements.txt
 ENV APP_DIR=/app
 RUN mkdir -p ${APP_DIR}
 WORKDIR ${APP_DIR}
+
+CMD [ "python","./src/server.py" ]

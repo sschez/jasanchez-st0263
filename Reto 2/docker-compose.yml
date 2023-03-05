@@ -4,13 +4,9 @@ services:
   gateway:
     build:
       context: ./gateway
-    command: flask run
-    environment:
-      - FLASK_APP=/app/src
-    expose:
-      - 80
+    command: python ./src/app.py
     ports:
-      - 80:80
+      - "5000:5000"
     env_file:
       - ./gateway/.env
     volumes:
@@ -19,19 +15,21 @@ services:
       - reto-2
     depends_on:
       - rabbitmq
+      - serv1-grpc
 
   serv1-grpc:
     build:
       context: ./serv1-grpc
-    command: air
     env_file:
       - ./serv1-grpc/.env
     volumes:
       - ./serv1-grpc:/app
     networks:
       - reto-2
-    depends_on:
-      - gateway
+    expose:
+      - 50051
+    ports:
+      - "50051:50051"
 
   serv2-mom:
     build:
@@ -52,9 +50,10 @@ services:
     expose:
       - 5672
     ports:
-      - 15672:15672
+      - "5672:5672"
+      - "15672:15672"
     volumes:
-      - ./config-RMQ/config.json:/etc/rabbitmq/definitions.json
+     - ./config-RMQ/config.json:/etc/rabbitmq/definitions.json
     networks:
       - reto-2
 
