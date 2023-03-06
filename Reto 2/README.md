@@ -132,7 +132,8 @@ PENDIENTE
 
 ## opcionalmente - si quiere mostrar resultados o pantallazos
 
-![Se puede ver como se listan los archivos que se encuentran en el microservicio del GRPC usando comunicacion sincrónica y como se buscan dos archivos con comunicación asicrónica, usando RabbitMQ; En donde se ve que el archivo test1.txt si existe en el servidor de este miscroservicio y el archivo test2.txt no existe.](resultados_servicios.png)
+![Se puede ver como se listan los archivos que se encuentran en el microservicio del GRPC usando comunicacion sincrónica y como se buscan dos archivos con comunicación asicrónica, usando RabbitMQ; En donde se ve que el archivo test1.txt si existe en el servidor de este miscroservicio y el archivo test2.txt no existe](resultados_servicios.png)
+Se puede ver como se listan los archivos que se encuentran en el microservicio del GRPC usando comunicacion sincrónica y como se buscan dos archivos con comunicación asicrónica, usando RabbitMQ; En donde se ve que el archivo test1.txt si existe en el servidor de este miscroservicio y el archivo test2.txt no existe.
 
 # referencias:
 
