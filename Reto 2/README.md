@@ -1,6 +1,6 @@
 # ST02363 Tópicos Especiales en Telemática
 
-# Estudiante: Alejandro Torres Muñoz, eatorresm@eafit.edu.co
+# Estudiante: Jose Alejandro Sánchez Sánchez, jasanchez@eafit.edu.co
 
 # Profesor: Edwin Nelson Montoya Munera, emontoya@eafit.edu.co
 
@@ -45,14 +45,14 @@ Todos los requerimientos fueron implementados.
 
 # 2. información general de diseño de alto nivel, arquitectura, patrones, mejores prácticas utilizadas.
 
-! [Arquitectura](/Arquitectura.png)
+![Arquitectura](./images/Arquitectura.png)
 
 Podemos observar 4 componentes fundamentales para el desarrollo y la arquitectura del proyecto:
 
-**1. API Gateway.
-2. Microservicio 1.
-3. MOM (RabbitMQ).
-4. Microservicio 2.**
+- API Gateway.
+- Microservicio 1.
+- MOM (RabbitMQ).
+- Microservicio 2.
 
 El cliente hace una petición sea a través de su navegador web, o desde Postman. Éste se comunica mediante API Rest. El API Gateway a su vez se comunica mediante gRPC con el primer microservicio, el cual es el encargado de listar archivos. El segundo microservicio es mediante comunicación MOM, utilizando RabbitMQ. Este funciona con colas y es el encargado de buscar archivos a través de una query que el usuario pasa. Dependiendo del tipo de solicitud que se haga se toma una comunicación u otra.
 
@@ -73,11 +73,33 @@ Todos los servicios fueron implementados con Python 3.10.6. En el proyecto, enco
 
 Flask se utilizó para implementar la puerta de enlace API, grpcio es la biblioteca del kit de herramientas gRPC para implementar el microservicio 1 y pika es la biblioteca de cliente RabbitMQ para implementar el microservicio 2.
 
-## como se compila y ejecuta.
+## Como se compila y ejecuta.
+El proyecto está dockerizado, por lo que deberás correr en primera instancia:
 
-PENDIENTE
+sudo apt update
+sudo apt install docker.io -y
+sudo apt install docker-compose -y
+sudo apt install git -y
 
-## detalles del desarrollo.
+sudo systemctl enable docker
+sudo systemctl start docker
+sudo usermod -a -G docker ubuntu
+
+Cuando hayas corrido los comandos, deberas clonar el repositorio:
+
+git clone https://github.com/sschez/sschez-st0263-jasanchez.git
+
+Cuando hayas clonado el repositorio, deberas situarte en la carpeta la única carpeta que se te creo y despues a Reto 2, y ejecutar:
+
+sudo docker-compose build
+
+Cuando se haya construido el contenedor, deberas levantarlo con:
+
+sudo docker-compose up
+
+Finalmente, deberás de esperar a que todo se ejecute y podrás utilizar el proyecto.
+
+## Detalles del desarrollo.
 
 Se implementó como primera instancia, el microservicio 1, este permite consultar los archivos mediante una comunicación gRPC. Luego de tener funcionando este microservicio, se procede a utilizar Flask como API Gateway. Finalmente se implementa el microservicio 2, el cual permite buscar los archivos mediante una query, y se comunica mediante MOM, precisamente con RabbitMQ.
 
@@ -86,24 +108,47 @@ Se implementó como primera instancia, el microservicio 1, este permite consulta
 - Se utilizó Git como versión de controles.
 - Se desplegó en una máquina virtual de AWS.
 
-## detalles técnicos
+## Detalles técnicos
 
 - **Arquitectura:** Microservicios.
 - **Comunicacion entre microservicios:** gRPC y RabbitMQ.
 - **Plataforma y servicios en nube:** Amazon AWS (EC2 Ubuntu, IPs elásticas)
 - **Orquestación del proyecto:** Docker
 
-## descripción y como se configura los parámetros del proyecto (ej: ip, puertos, conexión a bases de datos, variables de ambiente, parámetros, etc)
+## Descripción y como se configura los parámetros del proyecto (ej: ip, puertos, conexión a bases de datos, variables de ambiente, parámetros, etc)
 
+Cada microservicio cuenta con su .env, donde:
 
+- Gateway: 
 
-PENDIENTE
+    ROOT_PATH=/app/src/files
+    HOST_GRPC=serv1-grpc
+    HOST_RMQ=rabbitmq
+    PORT_GRPC=50051
+    PORT_RMQ=5672
+    USER=guest
+    PASSWORD=guest
+
+- Microservicio 1: 
+
+    ROOT_PATH=/app/src/files
+    SERVER_ADDRESS=serv1-grpc
+    PORT=50051
+
+- Microservicio 2:
+
+    HOST=rabbitmq
+    PORT=5672
+    USER=guest
+    PASSWORD=guest
+    QUEUE=archivo_rpc
 
 
 
 ## opcional - detalles de la organización del código por carpetas o descripción de algún archivo. (ESTRUCTURA DE DIRECTORIOS Y ARCHIVOS IMPORTANTE DEL PROYECTO, comando 'tree' de linux)
 
-PENDIENTE
+![](./images/tree1.png)
+![](./images/tree2.png)
 
 # 4. Descripción del ambiente de EJECUCIÓN (en producción) lenguaje de programación, librerias, paquetes, etc, con sus numeros de versiones.
 
@@ -111,14 +156,15 @@ PENDIENTE
 
 # IP o nombres de dominio en nube o en la máquina servidor.
   http://23.22.12.132:5000: Dirección de la maquina virtual
-  http://23.22.12.132:5000/files: Dirección para poder leer que archivos hay en el servidor GRPC de manera sincrónica
-  http://23.22.12.132:5000/search-files?query=<nombre_del_archivo>: Dirección donde se buscan los archivos de manera asincronica, donde <nombre_del_archivo> es el archivo a buscar en el servidor
+  http://23.22.12.132:5000/files :Dirección para poder leer que archivos hay en el servidor GRPC de manera sincrónica
+  http://23.22.12.132:5000/search-files?query=<nombre_del_archivo> :Dirección donde se buscan los archivos de manera asincronica, donde <nombre_del_archivo> es el archivo a buscar en el servidor
 
-## descripción y como se configura los parámetros del proyecto (ej: ip, puertos, conexión a bases de datos, variables de ambiente, parámetros, etc)
+## Descripción y como se configura los parámetros del proyecto (ej: ip, puertos, conexión a bases de datos, variables de ambiente, parámetros, etc)
 
-  PENDIENTE
+  Puesto que el proyecto se construyó utilizando docker-compose, el ambiente de ejecucion tanto en desarrollo como en producción es el mismo. Lo que se debe tener presente es que deben habilitar los puertos necesarios en AWS para permitir las comunicaciones.
 
-## como se lanza el servidor.
+
+## Como se lanza el servidor.
 
 -Entrar a la maquina->carpeta->Reto 2
 -Después utilizar los siguientes comandos:
@@ -127,12 +173,25 @@ PENDIENTE
 -Ya solo es entrar a la direccion con el proceso que se quiere, sea listar los archivos(http://23.22.12.132:5000/files) o buscar archivos(http://23.22.12.132:5000/search-files?query=<nombre_del_archivo>)
 
 
-## una mini guia de como un usuario utilizaría el software o la aplicación
+## Una mini guia de como un usuario utilizaría el software o la aplicación
+Para conectarse al API Gateway se debe hacer una peticion HTTP a la IP elastica de AWS y al puerto 5000.
+
+Para conectarse, deberá hacer una petición HTPP a la siguiente ip elástica 
+
+    http://23.22.12.132:5000
+
+Ambas peticiones funcionan como un GET, por lo que podremos acceder a los endpoints: /files y /search-files
+
+    http://23.22.12.132:5000/files -> lista todos los archivos que se encuentran en el directorio.
+
+    http://23.22.12.132:5000/search-files?query=<nombre_del_archivo> -> busca el archivo con el nombre nombre_archivo en el directorio.
 
 
-## opcionalmente - si quiere mostrar resultados o pantallazos
+Con Postman funciona similar, solicitamos una petición GET, y en parámetros debemos poner la query y el nombre del archivo a buscar en value (en caso de utilizar search-files). Las respuestas son en formatos .json.
 
-![](resultados_servicios.png)
+## Resultados
+
+![](./images/resultados_servicios.png)
 Se puede ver como se listan los archivos que se encuentran en el microservicio del GRPC usando comunicacion sincrónica y como se buscan dos archivos con comunicación asicrónica, usando RabbitMQ; En donde se ve que el archivo test1.txt si existe en el servidor de este miscroservicio y el archivo test2.txt no existe.
 
 # referencias:
