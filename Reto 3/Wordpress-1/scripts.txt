@@ -1,0 +1,1 @@
+docker-compose -f docker-compose-solo-wordpress-with-nfsclient.yml up -d
