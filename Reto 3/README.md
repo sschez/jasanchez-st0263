@@ -8,7 +8,7 @@
 # Reto 3
 
 
-# 1. breve descripción de la actividad
+# 1. Breve descripción de la actividad
 
   
 
@@ -22,13 +22,10 @@ Todos los requerimientos fueron implementados.
 
 # 2. información general de diseño de alto nivel, arquitectura, patrones, mejores prácticas utilizadas.
 
-![Arquitectura](./images/Arquitectura.png)
+![Arquitectura](./assets/Arquitectura.png)
 
 
 # 3. Descripción del ambiente de desarrollo y técnico: lenguaje de programación, librerias, paquetes, etc, con sus numeros de versiones.
-
-
-
 # 3.1 Como se compila y ejecuta.
 Para cada maquina se tiene que verificar de que los contenedores esten *up* y para eso se tiene que subir los docker-compose para cada una de la maquina.
 
@@ -74,12 +71,71 @@ Los detalles mas importantes en el desarrollo fueron:
 
 
 # 3.3 Detalles técnicos:
-- **Plataforma y servicios en nube:** Amazon GCP (Ubuntu 22.04 LTS)
-- **Orquestación del proyecto:** Docker
+- **Plataforma y servicios en nube:** Google Cloud Platform (Ubuntu 22.04 LTS x86-64)
+- **Orquestación del proyecto:** Docker (en excepción del NFS-Server)
+- **Docker-compose de Nginx:**
+
+        version: '3.1'
+        services:
+        nginx:
+            container_name: nginx
+            image: nginx
+            volumes:
+            - ./nginx.conf:/etc/nginx/nginx.conf:ro
+            - ./ssl:/etc/nginx/ssl
+            - ./ssl.conf:/etc/nginx/ssl.conf
+            ports:
+            - 80:80      
+            - 443:443
+
+- **Docker-compose de los Wordpress:**
+
+        version: '3.1'
+        services:
+        wordpress:
+            container_name: wordpress
+            image: wordpress
+            ports:
+            - 80:80      
+            restart: always
+            environment:
+            WORDPRESS_DB_HOST: 10.128.0.12
+            WORDPRESS_DB_USER: exampleuser
+            WORDPRESS_DB_PASSWORD: examplepass
+            WORDPRESS_DB_NAME: exampledb
+            volumes:
+            - /mnt/wordpress:/var/www/html
+
+- **Docker-compose de los Base de Datos:**
+
+        version: '3.1'
+        services:
+        db:
+            image: mysql:5.7
+            restart: always
+            ports:
+            - 3306:3306 
+            environment:
+            MYSQL_DATABASE: exampledb
+            MYSQL_USER: exampleuser
+            MYSQL_PASSWORD: examplepass
+            MYSQL_RANDOM_ROOT_PASSWORD: '1'
+            volumes:
+            - db:/var/lib/mysql
+        volumes:
+        db:
 
 # 3.4 Descripción y como se configura los parámetros del proyecto (ej: ip, puertos, conexión a bases de datos, variables de ambiente, parámetros, etc)
 
-En primer lugar se comenzo creando 5 maquinas virtuales (NGINX, WP1,WP2,BD,NFS). Para la maquina de 
+En primer lugar se comenzo creando 5 maquinas virtuales (NGINX, WP1,WP2,BD,NFS) y todas con el mismo sistema operativo (Ubuntu 22.04 LTS). 
+- Para la maquina de Nginx se le crea una IP estática debido a que esta es la que va en el registro DNS del proveedor del dominio, tambien se le activan la conexión por *http* y *https*. Dentro de la maquina se hace la petición del certificado SSL para poder tener conexión *https*, despues de eso, se dockeriza con solo nginx para despues modificar el archivo .conf en donde se crea un upstream en donde redireccionara a dos direcciones IP's las cuales serán las internas de los wordpress.
+
+- Para la base de datos, se creo sin necesidad de conexión http ni https, y solo se dockerizo.
+
+- Para el NFS-Server, se creo una maquina en donde no se dockerizo debido a que es la maquina que trae los mismos cambios y por ende se debio haber agregado en exportación una variable de entorno como se explica en el punto 3.2.
+
+- Para los Wordpress, se crearon con conexión http y https y no es era necesario la IP estática, debido a que las conexiones se hicieron con la interna. Dentro de cada Wordpress, se modifico el docker-compose para que colocar la dirección interna de la base de datos. Luego se hizo el mount, como se explico anteriormente en el punto 3.2.
+
 
 
 # 3.5 Detalles de la organización del código por carpetas o descripción de algún archivo. (ESTRUCTURA DE DIRECTORIOS Y ARCHIVOS IMPORTANTE DEL PROYECTO, comando 'tree' de linux)
@@ -109,23 +165,20 @@ El proyecto se realizo en 5 maquinas virtuales:
 # IP o nombres de dominio en nube o en la máquina servidor.
 - https://www.jasanchez.online : Es el dominio donde esta el Reto 3 completo.
 
-## Descripción y como se configura los parámetros del proyecto (ej: ip, puertos, conexión a bases de datos, variables de ambiente, parámetros, etc)
-
-  Puesto que el proyecto se construyó utilizando docker-compose, el ambiente de ejecucion tanto en desarrollo como en producción es el mismo. Lo que se debe tener presente es que deben habilitar los puertos necesarios en AWS para permitir las comunicaciones.
-
-
 ## Como se lanza el servidor.
 
+1. Se inicializan las maquinas.
+2. Entra al dominio.
+3. Se navega por el wordpress. En caso de que no cargue, se verifica en cada maquina virtual, menos la del nfs server, que los contenedores esten arriba.
 
-
-## Una mini guia de como un usuario utilizaría el software o la aplicación
-
-
+## Registros en Dominio
+![](./assets/Registros-DNS.png)
 ## Resultados
 
 ![](./assets/Resultado.png)
 
 
 # referencias:
-
-#### versión README.md -> 1.0 (2022-agosto)
+- https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nfs-mount-on-ubuntu-22-04
+- https://www.nginx.com/resources/wiki/start/topics/recipes/wordpress/
+- https://github.com/st0263eafit/st0263-231/tree/main/docker-nginx-wordpress-ssl-letsencrypt
