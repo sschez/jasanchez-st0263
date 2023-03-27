@@ -31,6 +31,7 @@ Todos los requerimientos fueron implementados.
 # 2. información general de diseño de alto nivel, arquitectura, patrones, mejores prácticas utilizadas.
 
 ![Arquitectura](./assets/Arquitectura.png)
+
 Podemos observar 5 instancias fundamentales para el desarrollo y la arquitectura del proyecto:
 
 1. Nginx - Balanceador de carga y proxy.
