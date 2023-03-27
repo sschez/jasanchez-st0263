@@ -10,11 +10,19 @@
 
 # 1. Breve descripción de la actividad
 
+Desplegar dos CMS wordpress empleando contenedores, con dominio propio dominio y certificado SSL.
+
+Se utilizará Nginx como balanceador de cargas, dos servidores adicionales tanto para la base de datos (MySQLdb) como para el manejo de replicacion de datos (NFS-SERVER).
   
 
 ## 1.1. Qué aspectos cumplió o desarrolló de la actividad propuesta por el profesor (requerimientos funcionales y no funcionales)
 
-
+1. Aplicación wordpress dockerizada monolítica en varios nodos que mejore la disponibilidad de la aplicación.
+2. Implementar un balanceador de cargas basado en nginx que reciba el tráfico web https de Internet con múltiples instancias de procesamiento.
+3. Tener 2 instancias de procesamiento wordpress detrás del balanceador de cargas.
+4. Tener 1 instancia de bases de datos mysql.
+5. Tener 1 instancia de archivos distribuidos en NFS.
+6. Certificado SSL.
 
 ## 1.2. Que aspectos NO cumplió o desarrolló de la actividad propuesta por el profesor (requerimientos funcionales y no funcionales)
 
@@ -23,7 +31,17 @@ Todos los requerimientos fueron implementados.
 # 2. información general de diseño de alto nivel, arquitectura, patrones, mejores prácticas utilizadas.
 
 ![Arquitectura](./assets/Arquitectura.png)
+Podemos observar 5 instancias fundamentales para el desarrollo y la arquitectura del proyecto:
 
+1. Nginx - Balanceador de carga y proxy.
+2. Wordpress 1.
+3. Wordpress 2.
+4. Base de datos MySQL.
+5. NFS Server
+
+Arquitecuta: El reto incorpora un disñeo monolítico, donde hay varios nodos que aseguran la alta disponibilidad de la misma.
+
+Mejores prácticas: Implementación de contenedores (con una configuración óptima para el ahorro de recursos), certificado SSL, separación de recursos mediante directiorios y/o carpetas.
 
 # 3. Descripción del ambiente de desarrollo y técnico: lenguaje de programación, librerias, paquetes, etc, con sus numeros de versiones.
 # 3.1 Como se compila y ejecuta.
