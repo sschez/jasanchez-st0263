@@ -18,7 +18,7 @@ información del tipo Sistema de Gestión de Aprendizaje y para eso se seleccion
 
 # 1.2. Que aspectos NO cumplió o desarrolló de la actividad propuesta por el profesor (requerimientos funcionales y no funcionales)
 
-Todos los requerimientos obligatorios al igual que algunos opcionales fueron implementados.
+Todos los requerimientos fueron implementados.
 
 # 2. Información general de diseño de alto nivel, arquitectura, patrones, mejores prácticas utilizadas.
 ![Arquitectura](./assets/Arquitectura.png)
@@ -53,11 +53,24 @@ A continuacion se explicara cada uno y su relacion en la arquitectura:
 
 
 # 3.4. Descripción y como se configura los parámetros del proyecto (ej: ip, puertos, conexión a bases de datos, variables de ambiente, parámetros, etc)
+A continuacion se mostrarán las instancias que se tienen en GCP:
 
+- SQL
+![SQL](./assets/SQL.png)
+- DISK
+![DISK](./assets/DISK.jpeg)
+- Group
+![GROUP](./assets/GROUP.jpeg)
+- Virtual Machines Instances
+![VM](./assets/VM.jpeg)
+- Load balancer
+![LB](./assets/LB.jpeg)
+- Templates
+![Templates](./assets/Templates.jpeg)
 
 
 # 3.5. Detalles de la organización del código por carpetas o descripción de algún archivo. (ESTRUCTURA DE DIRECTORIOS Y ARCHIVOS IMPORTANTE DEL PROYECTO, comando 'tree' de linux)
-
+![tree](./assets/tree.jpeg)
 
 # 4. Descripción del ambiente de EJECUCIÓN (en producción) lenguaje de programación, librerias, paquetes, etc, con sus numeros de versiones.
 
