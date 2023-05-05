@@ -47,9 +47,121 @@ A continuacion se explicara cada uno y su relacion en la arquitectura:
 # 3.2. Detalles del desarrollo.
 
 
-
 # 3.3. Detalles técnicos
+Dentro del main.tf se puede encontrar los siguientes detalles:
 
+- Modulo de nfs:
+
+        module "nfs" {
+        source      = "DeimosCloud/nfs/google"
+        name_prefix = "moodle-nfs"
+        labels      = {}
+        project     = "reto4-moodle"
+        network     = google_compute_network.reto4_network.name
+        export_paths = [
+            "/mnt/moodle",
+            "/mnt/moodledata"
+        ]
+        capacity_gb = "10"
+        attach_public_ip = true
+        }
+
+            resource "google_sql_database_instance" "moodle_db_primary" {
+                name             = "moodle-db-primary"
+                database_version = "POSTGRES_14"
+                region           = "us-central1"
+
+                settings {
+                    # Second-generation instance tiers are based on the machine
+                    # type. See argument reference below.
+                    tier = "db-f1-micro"
+                }
+            }
+
+            resource "google_sql_database" "moodle_db" {
+            name     = "bitnami_moodle"
+            instance = google_sql_database_instance.moodle_db_primary.name
+            }
+
+            resource "google_sql_user" "users" {
+            name     = "bn_moodle"
+            instance = google_sql_database_instance.moodle_db_primary.name
+            password = "password"
+            }
+
+            resource "google_compute_target_pool" "reto4_target_pool" {
+                name = "reto4-target-pool"
+                project = "reto4-moodle"
+                region = "us-central1"
+            }
+
+- Modulo de load balancer:
+
+        module "lb" {
+            source = "GoogleCloudPlatform/lb/google"
+            version = "2.2.0"
+            region = "us-central1"
+            name = "load-balancer"
+            service_port = 80
+            target_tags = ["reto4-target-pool"]
+            network = google_compute_network.reto4_network.name
+        }
+
+        resource "google_compute_autoscaler" "reto4_autoscaler" {
+            name = "reto4-autoscaler"
+            project = "reto4-moodle"
+            zone = "us-central1-c"
+            target = google_compute_instance_group_manager.reto_4_group_manager.self_link
+
+            autoscaling_policy {
+            max_replicas = 5
+            min_replicas = 1
+            cooldown_period = 60
+
+                cpu_utilization {
+                target = 0.5    
+                }
+            }
+        }
+
+        resource "google_compute_instance_template" "reto4_moodle_template" {
+        name = "reto4-instance-template"
+        machine_type = "e2-micro"
+        can_ip_forward = false
+        project = "reto4-moodle"
+        tags = ["allow-lb-service"]
+
+            disk {
+                source_image = data.google_compute_image.reto4_moodle_image.self_link
+            }
+
+            network_interface {
+                network = google_compute_network.reto4_network.name
+            }
+
+            service_account {
+                scopes = ["userinfo-email", "compute-ro", "storage-ro"]
+            }
+        }
+
+
+        resource "google_compute_instance_group_manager" "reto_4_group_manager" {
+            name = "reto4-igm"
+            zone = "us-central1-c"
+            project = "reto4-moodle"
+            version {
+                instance_template = google_compute_instance_template.reto4_moodle_template.self_link
+                name = "primary"
+            }
+
+            target_pools = [google_compute_target_pool.reto4_target_pool.self_link]
+            base_instance_name = "st263"
+        }
+
+        data "google_compute_image" "reto4_moodle_image" {
+            name = "reto4-seed"
+            project = "reto4-moodle"
+        }
 
 
 # 3.4. Descripción y como se configura los parámetros del proyecto (ej: ip, puertos, conexión a bases de datos, variables de ambiente, parámetros, etc)
@@ -77,17 +189,3 @@ A continuacion se mostrarán las instancias que se tienen en GCP:
 - Terraform: Terraform es una herramienta de infraestructura como código (IaC) que permite a los usuarios describir y gestionar la infraestructura de sus aplicaciones de manera declarativa. En lugar de crear y configurar manualmente los recursos de la infraestructura en la nube, los usuarios pueden definirlos en un archivo de configuración de Terraform y aplicar los cambios con un solo comando. Además, Terraform proporciona una interfaz para interactuar con los servicios y recursos de GCP, lo que permite a los usuarios definir su infraestructura en términos de recursos de GCP y gestionarlos de manera consistente y escalable. Con Terraform, los usuarios pueden crear y administrar fácilmente sus recursos de GCP, como instancias de máquinas virtuales, redes y bases de datos, entre otros.
 
 Sabiendo ya que es Terraform, se utilizó un Script en el cual se ejecuta el init y terraform crea las instancias y las configura, terraform evita algunos trabajos, sin embargo, hay que hacer unas configraciones manuales para el proyecto.
-
-# IP o nombres de dominio en nube o en la máquina servidor.
-
-## descripción y como se configura los parámetros del proyecto (ej: ip, puertos, conexión a bases de datos, variables de ambiente, parámetros, etc)
-
-## como se lanza el servidor.
-
-## una mini guia de como un usuario utilizaría el software o la aplicación
-
-## opcionalmente - si quiere mostrar resultados o pantallazos 
-
-# 5. otra información que considere relevante para esta actividad.
-
-# referencias:
