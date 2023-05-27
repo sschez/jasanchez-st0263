@@ -17,5 +17,3 @@ El código utiliza el framework MRJob para implementar un programa MapReduce con
    - En el método `reducer_find_lowest_price_day`, se suman los precios por fecha y se encuentra la fecha con el valor mínimo utilizando la función `min`.
 
 Cada clase utiliza los métodos `run` de MRJob para ejecutar el programa MapReduce correspondiente. Al ejecutar el programa, se imprimen los resultados de cada análisis.
-
-En resumen, el código implementa un programa MapReduce que realiza diferentes análisis sobre datos de empresas y precios de acciones, calculando el día con el valor mínimo y máximo para cada empresa, verificando si las acciones son crecientes o estables, y encontrando el día con los precios más bajos en general.
