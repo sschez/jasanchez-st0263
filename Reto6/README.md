@@ -25,10 +25,9 @@ Realizar diferentes actividades acerca de los motores de consulta SQL BigData, t
   - Se catalograron los datos con AWS Glue.
   - Se realizaron diferentes consultas con hive usando catalogos de AWS Glue y con hupyterhub usando catalogos de AWS Glue, utilizando Apahce Spark SQL.
 
-3. Se implemento un data warehouse con AWS RedShift
-
-
 
 ## Que aspectos NO cumplió o desarrolló de la actividad propuesta por el profesor (requerimientos funcionales y no funcionales)
 
-Se realizo lo que se propuso
+3. No se implemento un data warehouse con AWS RedShift, debido a que no se entendia bien el procedimiento ni lo que se queria llegar
+
+
