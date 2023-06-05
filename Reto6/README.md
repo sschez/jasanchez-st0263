@@ -1,6 +1,6 @@
 # Info de la materia: ST0263 Topicos Especiales en Telematica
 
-# Estudiante: Jose Alejandro Sánchez Sánchez
+# Estudiante: Jose Alejandro Sánchez Sánchez, Edison Alejandro Torres
 
 # Profesor: Edwin Nelson Montoya, emontoya@eafit.brightspace.com
 
